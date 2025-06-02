@@ -15,11 +15,11 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="glass-card p-4 m-4 sticky top-4 z-50">
+    <nav className="glass-card p-6 m-4 sticky top-4 z-50 border border-green-500/20 shadow-2xl shadow-green-500/10">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-crypto-gradient rounded-lg animate-glow"></div>
-          <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-xl animate-pulse-green shadow-lg shadow-green-500/30"></div>
+          <span className="text-2xl font-bold bg-gradient-to-r from-green-400 via-green-500 to-emerald-600 bg-clip-text text-transparent">
             CryptoSwap
           </span>
         </div>
@@ -30,23 +30,23 @@ const Navigation = () => {
             <Link
               key={item.name}
               to={item.path}
-              className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+              className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold ${
                 isActive(item.path)
-                  ? 'bg-crypto-gradient text-white shadow-lg shadow-purple-500/25'
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5'
               }`}
             >
               {item.name}
             </Link>
           ))}
-          <button className="crypto-button px-6 py-2 rounded-lg text-white font-medium">
+          <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-8 py-3 rounded-xl text-white font-bold shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all duration-300 transform hover:scale-105">
             Connect Wallet
           </button>
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-300"
           onClick={() => setIsOpen(!isOpen)}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,22 +57,22 @@ const Navigation = () => {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden mt-4 space-y-2">
+        <div className="md:hidden mt-6 space-y-3">
           {navItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
-              className={`block px-4 py-2 rounded-lg transition-all duration-300 ${
+              className={`block px-6 py-3 rounded-xl transition-all duration-300 font-semibold ${
                 isActive(item.path)
-                  ? 'bg-crypto-gradient text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5'
               }`}
               onClick={() => setIsOpen(false)}
             >
               {item.name}
             </Link>
           ))}
-          <button className="w-full crypto-button px-4 py-2 rounded-lg text-white font-medium">
+          <button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-3 rounded-xl text-white font-bold shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all duration-300">
             Connect Wallet
           </button>
         </div>
