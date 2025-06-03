@@ -1,3 +1,4 @@
+
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Wallet, BarChart3, PieChart as PieChartIcon, TrendingUp } from 'lucide-react';
 import { useTokenPrice } from '../hooks/useTokenPrice';
@@ -162,7 +163,6 @@ const Dashboard = () => {
                   outerRadius={80}
                   dataKey="value"
                   label={({ name, value }) => `${name} ${value}%`}
-                  labelStyle={{ fill: 'white', fontWeight: 'bold', fontSize: '12px' }}
                 >
                   {portfolioData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
