@@ -6,12 +6,14 @@ import {
   ConnectWallet,
   WalletDropdown,
   WalletDropdownDisconnect,
+} from '@coinbase/onchainkit/wallet';
+import { 
   Identity,
   Avatar,
   Name,
   Address,
   EthBalance
-} from '@coinbase/onchainkit/wallet';
+} from '@coinbase/onchainkit/identity';
 import { useAccount } from 'wagmi';
 
 const Navigation = () => {
