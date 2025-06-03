@@ -23,18 +23,20 @@ async function fetchBloomPrice(): Promise<TokenPriceData> {
     const data = await response.json();
     const tokenData = data.data.attributes;
     
+    console.log('Real BLOOM price data:', tokenData);
+    
     return {
       price: parseFloat(tokenData.price_usd || '0'),
-      priceChange24h: parseFloat(tokenData.price_change_percentage.h24 || '0'),
-      volume24h: parseFloat(tokenData.volume_usd.h24 || '0'),
+      priceChange24h: parseFloat(tokenData.price_change_percentage?.h24 || '0'),
+      volume24h: parseFloat(tokenData.volume_usd?.h24 || '0'),
     };
   } catch (error) {
     console.error('Error fetching BLOOM price:', error);
-    // Fallback data
+    // Return zero values if API fails
     return {
-      price: 0.0023,
-      priceChange24h: 5.67,
-      volume24h: 125000,
+      price: 0,
+      priceChange24h: 0,
+      volume24h: 0,
     };
   }
 }

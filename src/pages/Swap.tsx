@@ -1,10 +1,10 @@
 
 import { useState, useEffect } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 import { useTokenPrice } from '../hooks/useTokenPrice';
-import { formatUnits } from 'viem';
+import { useBaseBalances } from '../hooks/useBaseBalances';
 
 const Swap = () => {
   const [fromAmount, setFromAmount] = useState('');
@@ -13,29 +13,36 @@ const Swap = () => {
   const [toToken, setToToken] = useState('ETH');
   const [slippage, setSlippage] = useState('0.5');
 
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const { bloomBalance } = useTokenBalance();
   const { data: bloomPrice } = useTokenPrice();
-  
-  const { data: ethBalance } = useBalance({
-    address: address,
-  });
+  const { ethBalance, usdcBalance, usdtBalance } = useBaseBalances();
 
   const tokens = [
     { 
       symbol: 'BLOOM', 
       name: 'BLOOM Token', 
-      price: bloomPrice?.price || 0.0023,
+      price: bloomPrice?.price || 0.00003538,
       balance: isConnected ? bloomBalance : '0'
     },
     { 
       symbol: 'ETH', 
-      name: 'Ethereum', 
+      name: 'Ethereum (Base)', 
       price: 2000,
-      balance: isConnected && ethBalance ? formatUnits(ethBalance.value, ethBalance.decimals) : '0'
+      balance: isConnected ? ethBalance : '0'
     },
-    { symbol: 'USDC', name: 'USD Coin', price: 1, balance: isConnected ? '5000.00' : '0' },
-    { symbol: 'USDT', name: 'Tether', price: 1, balance: isConnected ? '2500.00' : '0' },
+    { 
+      symbol: 'USDC', 
+      name: 'USD Coin (Base)', 
+      price: 1, 
+      balance: isConnected ? usdcBalance : '0' 
+    },
+    { 
+      symbol: 'USDT', 
+      name: 'Tether (Base)', 
+      price: 1, 
+      balance: isConnected ? usdtBalance : '0' 
+    },
   ];
 
   const handleSwapTokens = () => {
@@ -78,14 +85,14 @@ const Swap = () => {
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-green-400 via-green-500 to-emerald-600 bg-clip-text text-transparent">
             Swap Tokens
           </h1>
-          <p className="text-gray-400 text-base md:text-lg">Trade tokens instantly with the best rates</p>
+          <p className="text-gray-400 text-base md:text-lg">Trade tokens instantly on Base Network</p>
         </div>
 
         {/* Connection Status */}
         {!isConnected && (
           <div className="glass-card p-4 md:p-6 border border-yellow-500/20 shadow-2xl shadow-yellow-500/10">
             <p className="text-center text-yellow-400 font-medium">
-              Connect your wallet to see real balances and enable swapping
+              Connect your wallet to see real Base network balances and enable swapping
             </p>
           </div>
         )}
@@ -207,8 +214,8 @@ const Swap = () => {
                 <span className="text-green-400 font-bold">0.01%</span>
               </div>
               <div className="flex justify-between text-gray-400">
-                <span className="font-medium">Network Fee</span>
-                <span className="font-bold text-white">~$12.50</span>
+                <span className="font-medium">Base Network Fee</span>
+                <span className="font-bold text-white">~$0.05</span>
               </div>
             </div>
           )}
@@ -222,13 +229,13 @@ const Swap = () => {
             }`}
             disabled={!fromAmount || !toAmount || !isConnected}
           >
-            {!isConnected ? 'Connect Wallet' : !fromAmount ? 'Enter Amount' : 'Swap Tokens'}
+            {!isConnected ? 'Connect Wallet' : !fromAmount ? 'Enter Amount' : 'Swap on Base Network'}
           </button>
         </div>
 
         {/* Recent Transactions */}
         <div className="glass-card p-4 md:p-8 border border-green-500/20 shadow-2xl shadow-green-500/10">
-          <h3 className="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">Recent Swaps</h3>
+          <h3 className="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">Recent Base Network Swaps</h3>
           <div className="space-y-3 md:space-y-4">
             {[
               { from: 'BLOOM', to: 'ETH', amount: '1000', time: '2 hours ago' },
