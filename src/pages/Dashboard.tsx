@@ -4,44 +4,60 @@ import { Wallet, BarChart3, PieChart as PieChartIcon, TrendingUp } from 'lucide-
 import { useTokenPrice } from '../hooks/useTokenPrice';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 import { useBaseBalances } from '../hooks/useBaseBalances';
+import { useTokenPrices } from '../hooks/useTokenPrices';
+import { useBloomPerformance } from '../hooks/useBloomPerformance';
 
 const Dashboard = () => {
   const { data: bloomPrice, isLoading: priceLoading } = useTokenPrice();
   const { bloomBalance, isConnected } = useTokenBalance();
   const { ethBalance, usdcBalance, usdtBalance } = useBaseBalances();
+  const { data: allTokenPrices } = useTokenPrices();
+  const { data: performanceData } = useBloomPerformance();
 
-  const priceData = [
-    { time: '00:00', price: 45000 },
-    { time: '04:00', price: 46200 },
-    { time: '08:00', price: 45800 },
-    { time: '12:00', price: 47500 },
-    { time: '16:00', price: 48200 },
-    { time: '20:00', price: 49100 },
-    { time: '24:00', price: 50300 },
+  // Calculate USD values for real balances using real prices
+  const bloomUsdValue = isConnected && allTokenPrices?.bloom 
+    ? (parseFloat(bloomBalance) * allTokenPrices.bloom.price).toFixed(2)
+    : '0.00';
+
+  const ethUsdValue = isConnected && allTokenPrices?.eth
+    ? (parseFloat(ethBalance) * allTokenPrices.eth.price).toFixed(2)
+    : '0.00';
+
+  const usdcUsdValue = isConnected && allTokenPrices?.usdc
+    ? (parseFloat(usdcBalance) * allTokenPrices.usdc.price).toFixed(2)
+    : '0.00';
+
+  const usdtUsdValue = isConnected && allTokenPrices?.usdt
+    ? (parseFloat(usdtBalance) * allTokenPrices.usdt.price).toFixed(2)
+    : '0.00';
+
+  const totalPortfolioValue = parseFloat(bloomUsdValue) + parseFloat(ethUsdValue) + parseFloat(usdcUsdValue) + parseFloat(usdtUsdValue);
+
+  // Calculate real portfolio distribution based on USD values
+  const portfolioData = totalPortfolioValue > 0 ? [
+    { 
+      name: 'BLOOM', 
+      value: Math.round((parseFloat(bloomUsdValue) / totalPortfolioValue) * 100), 
+      color: '#16a34a' 
+    },
+    { 
+      name: 'ETH', 
+      value: Math.round((parseFloat(ethUsdValue) / totalPortfolioValue) * 100), 
+      color: '#22c55e' 
+    },
+    { 
+      name: 'USDC', 
+      value: Math.round((parseFloat(usdcUsdValue) / totalPortfolioValue) * 100), 
+      color: '#4ade80' 
+    },
+    { 
+      name: 'USDT', 
+      value: Math.round((parseFloat(usdtUsdValue) / totalPortfolioValue) * 100), 
+      color: '#86efac' 
+    },
+  ].filter(item => item.value > 0) : [
+    { name: 'No Balance', value: 100, color: '#6b7280' }
   ];
-
-  const portfolioData = [
-    { name: 'BLOOM', value: 45, color: '#16a34a' },
-    { name: 'ETH', value: 35, color: '#22c55e' },
-    { name: 'USDC', value: 20, color: '#4ade80' },
-  ];
-
-  // Calculate USD values for real balances
-  const bloomUsdValue = isConnected && bloomPrice && bloomPrice.price > 0 
-    ? (parseFloat(bloomBalance) * bloomPrice.price).toFixed(2)
-    : '0.00';
-
-  const ethUsdValue = isConnected 
-    ? (parseFloat(ethBalance) * 2000).toFixed(2) // Using approximate ETH price
-    : '0.00';
-
-  const usdcUsdValue = isConnected 
-    ? parseFloat(usdcBalance).toFixed(2)
-    : '0.00';
-
-  const usdtUsdValue = isConnected 
-    ? parseFloat(usdtBalance).toFixed(2)
-    : '0.00';
 
   const walletBalances = [
     { 
@@ -49,32 +65,32 @@ const Dashboard = () => {
       symbol: 'BLOOM', 
       balance: isConnected ? parseFloat(bloomBalance).toFixed(4) : '0.0000', 
       usdValue: `$${bloomUsdValue}`, 
-      change: bloomPrice && bloomPrice.priceChange24h !== 0 ? `${bloomPrice.priceChange24h > 0 ? '+' : ''}${bloomPrice.priceChange24h.toFixed(2)}%` : '0.00%', 
-      positive: bloomPrice ? bloomPrice.priceChange24h >= 0 : true 
+      change: allTokenPrices?.bloom ? `${allTokenPrices.bloom.priceChange24h > 0 ? '+' : ''}${allTokenPrices.bloom.priceChange24h.toFixed(2)}%` : '0.00%', 
+      positive: allTokenPrices?.bloom ? allTokenPrices.bloom.priceChange24h >= 0 : true 
     },
     { 
       token: 'Ethereum (Base)', 
       symbol: 'ETH', 
       balance: isConnected ? parseFloat(ethBalance).toFixed(4) : '0.0000', 
       usdValue: `$${ethUsdValue}`, 
-      change: '+2.45%', 
-      positive: true 
+      change: allTokenPrices?.eth ? `${allTokenPrices.eth.priceChange24h > 0 ? '+' : ''}${allTokenPrices.eth.priceChange24h.toFixed(2)}%` : '0.00%', 
+      positive: allTokenPrices?.eth ? allTokenPrices.eth.priceChange24h >= 0 : true 
     },
     { 
       token: 'USD Coin (Base)', 
       symbol: 'USDC', 
       balance: isConnected ? parseFloat(usdcBalance).toFixed(2) : '0.00', 
       usdValue: `$${usdcUsdValue}`, 
-      change: '0.00%', 
-      positive: true 
+      change: allTokenPrices?.usdc ? `${allTokenPrices.usdc.priceChange24h > 0 ? '+' : ''}${allTokenPrices.usdc.priceChange24h.toFixed(2)}%` : '0.00%', 
+      positive: allTokenPrices?.usdc ? allTokenPrices.usdc.priceChange24h >= 0 : true 
     },
     { 
       token: 'Tether (Base)', 
       symbol: 'USDT', 
       balance: isConnected ? parseFloat(usdtBalance).toFixed(2) : '0.00', 
       usdValue: `$${usdtUsdValue}`, 
-      change: '-0.01%', 
-      positive: false 
+      change: allTokenPrices?.usdt ? `${allTokenPrices.usdt.priceChange24h > 0 ? '+' : ''}${allTokenPrices.usdt.priceChange24h.toFixed(2)}%` : '0.00%', 
+      positive: allTokenPrices?.usdt ? allTokenPrices.usdt.priceChange24h >= 0 : true 
     },
   ];
 
@@ -134,14 +150,16 @@ const Dashboard = () => {
           <div className="text-center">
             <h3 className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3 font-semibold">Total Portfolio Value</h3>
             <p className="text-3xl md:text-4xl font-bold text-white mb-1 md:mb-2">
-              ${isConnected ? (parseFloat(bloomUsdValue) + parseFloat(ethUsdValue) + parseFloat(usdcUsdValue) + parseFloat(usdtUsdValue)).toFixed(2) : '0.00'}
+              ${isConnected ? totalPortfolioValue.toFixed(2) : '0.00'}
             </p>
             <p className="text-green-400 text-base md:text-lg font-medium">Base Network</p>
           </div>
           <div className="text-center">
             <h3 className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3 font-semibold">24h Change</h3>
-            <p className="text-2xl md:text-3xl font-bold text-green-400 mb-1 md:mb-2">
-              {bloomPrice ? `${bloomPrice.priceChange24h > 0 ? '+' : ''}${bloomPrice.priceChange24h.toFixed(2)}%` : '0.00%'}
+            <p className={`text-2xl md:text-3xl font-bold mb-1 md:mb-2 ${
+              allTokenPrices?.bloom && allTokenPrices.bloom.priceChange24h > 0 ? 'text-green-400' : 'text-red-400'
+            }`}>
+              {allTokenPrices?.bloom ? `${allTokenPrices.bloom.priceChange24h > 0 ? '+' : ''}${allTokenPrices.bloom.priceChange24h.toFixed(2)}%` : '0.00%'}
             </p>
             <p className="text-gray-400 text-base md:text-lg">BLOOM Performance</p>
           </div>
@@ -155,18 +173,18 @@ const Dashboard = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-        {/* Price Chart */}
+        {/* BLOOM Price Chart */}
         <div className="glass-card p-4 md:p-8 border border-green-500/20 shadow-2xl shadow-green-500/10">
           <div className="flex items-center space-x-3 mb-4 md:mb-8">
             <BarChart3 className="text-green-400 w-5 h-5 md:w-6 md:h-6" />
-            <h2 className="text-xl md:text-2xl font-bold text-white">Portfolio Performance</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-white">BLOOM Performance (7 Days)</h2>
           </div>
           <div className="h-60 md:h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={priceData}>
+              <LineChart data={performanceData || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis dataKey="time" stroke="#9CA3AF" fontSize={12} />
-                <YAxis stroke="#9CA3AF" fontSize={12} />
+                <YAxis stroke="#9CA3AF" fontSize={12} tickFormatter={(value) => `$${value.toFixed(8)}`} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: 'rgba(0, 0, 0, 0.9)',
@@ -175,6 +193,7 @@ const Dashboard = () => {
                     color: 'white',
                     boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                   }}
+                  formatter={(value: any) => [`$${parseFloat(value).toFixed(8)}`, 'BLOOM Price']}
                 />
                 <Line
                   type="monotone"

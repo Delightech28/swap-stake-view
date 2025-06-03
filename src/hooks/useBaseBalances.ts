@@ -33,42 +33,46 @@ export function useBaseBalances() {
   });
 
   // USDC contracts
+  const usdcContracts = address ? [
+    {
+      address: USDC_BASE,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf' as const,
+      args: [address],
+      chainId: base.id,
+    },
+    {
+      address: USDC_BASE,
+      abi: ERC20_ABI,
+      functionName: 'decimals' as const,
+      chainId: base.id,
+    },
+  ] : [];
+
   const { data: usdcData } = useReadContracts({
-    contracts: address ? [
-      {
-        address: USDC_BASE,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [address],
-        chainId: base.id,
-      },
-      {
-        address: USDC_BASE,
-        abi: ERC20_ABI,
-        functionName: 'decimals',
-        chainId: base.id,
-      },
-    ] : [],
+    contracts: usdcContracts,
     query: { enabled: !!address },
   });
 
   // USDT contracts
+  const usdtContracts = address ? [
+    {
+      address: USDT_BASE,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf' as const,
+      args: [address],
+      chainId: base.id,
+    },
+    {
+      address: USDT_BASE,
+      abi: ERC20_ABI,
+      functionName: 'decimals' as const,
+      chainId: base.id,
+    },
+  ] : [];
+
   const { data: usdtData } = useReadContracts({
-    contracts: address ? [
-      {
-        address: USDT_BASE,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [address],
-        chainId: base.id,
-      },
-      {
-        address: USDT_BASE,
-        abi: ERC20_ABI,
-        functionName: 'decimals',
-        chainId: base.id,
-      },
-    ] : [],
+    contracts: usdtContracts,
     query: { enabled: !!address },
   });
 
