@@ -32,45 +32,47 @@ export function useBaseBalances() {
     chainId: base.id,
   });
 
-  // USDC and USDT balances on Base
+  // USDC and USDT balances on Base - simplified contract structure
+  const contracts = address ? [
+    {
+      address: USDC_BASE,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf' as const,
+      args: [address],
+      chainId: base.id,
+    },
+    {
+      address: USDC_BASE,
+      abi: ERC20_ABI,
+      functionName: 'decimals' as const,
+      chainId: base.id,
+    },
+    {
+      address: USDT_BASE,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf' as const,
+      args: [address],
+      chainId: base.id,
+    },
+    {
+      address: USDT_BASE,
+      abi: ERC20_ABI,
+      functionName: 'decimals' as const,
+      chainId: base.id,
+    },
+  ] : [];
+
   const { data: tokenBalances } = useReadContracts({
-    contracts: address ? [
-      {
-        address: USDC_BASE,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [address],
-        chainId: base.id,
-      },
-      {
-        address: USDC_BASE,
-        abi: ERC20_ABI,
-        functionName: 'decimals',
-        chainId: base.id,
-      },
-      {
-        address: USDT_BASE,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [address],
-        chainId: base.id,
-      },
-      {
-        address: USDT_BASE,
-        abi: ERC20_ABI,
-        functionName: 'decimals',
-        chainId: base.id,
-      },
-    ] : [],
+    contracts,
     query: { enabled: !!address },
   });
 
   const usdcBalance = tokenBalances?.[0]?.result && tokenBalances?.[1]?.result
-    ? formatUnits(tokenBalances[0].result, tokenBalances[1].result)
+    ? formatUnits(tokenBalances[0].result as bigint, tokenBalances[1].result as number)
     : '0';
 
   const usdtBalance = tokenBalances?.[2]?.result && tokenBalances?.[3]?.result
-    ? formatUnits(tokenBalances[2].result, tokenBalances[3].result)
+    ? formatUnits(tokenBalances[2].result as bigint, tokenBalances[3].result as number)
     : '0';
 
   const ethBalanceFormatted = ethBalance 
