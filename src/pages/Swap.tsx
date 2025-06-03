@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ArrowDown, ArrowUp, AlertTriangle } from 'lucide-react';
 import { useAccount } from 'wagmi';
@@ -106,7 +105,6 @@ const Swap = () => {
       if (fromTokenData && toTokenData && fromTokenData.price && toTokenData.price) {
         const usdValue = parseFloat(value) * fromTokenData.price;
         const toValue = usdValue / toTokenData.price;
-        setToAmount(toValue.toFixed(8));
         
         // Apply slippage for display
         const slippageNum = parseFloat(slippage) / 100;
@@ -131,6 +129,10 @@ const Swap = () => {
       </span>
     );
   };
+
+  // Calculate USD values for display
+  const fromUsdValue = fromAmount ? (parseFloat(fromAmount) * (tokens.find(t => t.symbol === fromToken)?.price || 0)).toFixed(2) : '0.00';
+  const toUsdValue = toAmount ? (parseFloat(toAmount) * (tokens.find(t => t.symbol === toToken)?.price || 0)).toFixed(2) : '0.00';
 
   useEffect(() => {
     if (fromAmount) {
@@ -201,6 +203,12 @@ const Swap = () => {
                   {formatPriceChange(tokens.find(t => t.symbol === fromToken)?.priceChange24h || 0)}
                 </div>
               </div>
+              {/* USD Value Display */}
+              {fromAmount && (
+                <div className="text-center">
+                  <span className="text-lg font-bold text-green-400">${fromUsdValue}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -247,6 +255,12 @@ const Swap = () => {
                   {formatPriceChange(tokens.find(t => t.symbol === toToken)?.priceChange24h || 0)}
                 </div>
               </div>
+              {/* USD Value Display */}
+              {toAmount && (
+                <div className="text-center">
+                  <span className="text-lg font-bold text-green-400">${toUsdValue}</span>
+                </div>
+              )}
             </div>
           </div>
 

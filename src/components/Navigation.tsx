@@ -35,7 +35,7 @@ const Navigation = () => {
         <div className="flex items-center space-x-2 md:space-x-3">
           <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-xl animate-pulse-green shadow-lg shadow-green-500/30"></div>
           <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-400 via-green-500 to-emerald-600 bg-clip-text text-transparent">
-            CryptoSwap
+            BaseBloomer
           </span>
         </div>
 
@@ -58,7 +58,8 @@ const Navigation = () => {
           <Wallet>
             <ConnectWallet className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 md:px-8 py-2 md:py-3 rounded-xl text-white font-bold shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
               <Avatar className="h-5 w-5 md:h-6 md:w-6" />
-              <Name className="text-sm md:text-base" />
+              <Name className="text-sm md:text-base hidden md:block" />
+              <Address className="text-gray-400 hidden md:block" />
             </ConnectWallet>
             <WalletDropdown>
               <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
@@ -105,7 +106,7 @@ const Navigation = () => {
             <Wallet>
               <ConnectWallet className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-4 md:px-6 py-2 md:py-3 rounded-xl text-white font-bold shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all duration-300 text-sm md:text-base flex items-center justify-center space-x-2">
                 <Avatar className="h-5 w-5 md:h-6 md:w-6" />
-                <Name className="text-sm md:text-base" />
+                <Name className="text-sm md:text-base hidden sm:block" />
               </ConnectWallet>
               <WalletDropdown>
                 <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>

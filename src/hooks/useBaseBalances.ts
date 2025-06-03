@@ -32,51 +32,44 @@ export function useBaseBalances() {
     chainId: base.id,
   });
 
-  // Only make contract calls if address exists
-  const shouldFetch = !!address;
-
-  // USDC balance and decimals - simplified structure
-  const usdcContracts = shouldFetch ? [
-    {
-      address: USDC_BASE,
-      abi: ERC20_ABI,
-      functionName: 'balanceOf' as const,
-      args: [address!],
-      chainId: base.id,
-    },
-    {
-      address: USDC_BASE,
-      abi: ERC20_ABI,
-      functionName: 'decimals' as const,
-      chainId: base.id,
-    },
-  ] as const : [];
-
+  // USDC contracts
   const { data: usdcData } = useReadContracts({
-    contracts: usdcContracts,
-    query: { enabled: shouldFetch },
+    contracts: address ? [
+      {
+        address: USDC_BASE,
+        abi: ERC20_ABI,
+        functionName: 'balanceOf',
+        args: [address],
+        chainId: base.id,
+      },
+      {
+        address: USDC_BASE,
+        abi: ERC20_ABI,
+        functionName: 'decimals',
+        chainId: base.id,
+      },
+    ] : [],
+    query: { enabled: !!address },
   });
 
-  // USDT balance and decimals - simplified structure
-  const usdtContracts = shouldFetch ? [
-    {
-      address: USDT_BASE,
-      abi: ERC20_ABI,
-      functionName: 'balanceOf' as const,
-      args: [address!],
-      chainId: base.id,
-    },
-    {
-      address: USDT_BASE,
-      abi: ERC20_ABI,
-      functionName: 'decimals' as const,
-      chainId: base.id,
-    },
-  ] as const : [];
-
+  // USDT contracts
   const { data: usdtData } = useReadContracts({
-    contracts: usdtContracts,
-    query: { enabled: shouldFetch },
+    contracts: address ? [
+      {
+        address: USDT_BASE,
+        abi: ERC20_ABI,
+        functionName: 'balanceOf',
+        args: [address],
+        chainId: base.id,
+      },
+      {
+        address: USDT_BASE,
+        abi: ERC20_ABI,
+        functionName: 'decimals',
+        chainId: base.id,
+      },
+    ] : [],
+    query: { enabled: !!address },
   });
 
   const usdcBalance = usdcData?.[0]?.result && usdcData?.[1]?.result
