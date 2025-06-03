@@ -32,47 +32,52 @@ export function useBaseBalances() {
     chainId: base.id,
   });
 
-  // USDC and USDT balances on Base - simplified contract structure
-  const contracts = address ? [
-    {
-      address: USDC_BASE,
-      abi: ERC20_ABI,
-      functionName: 'balanceOf' as const,
-      args: [address],
-      chainId: base.id,
-    },
-    {
-      address: USDC_BASE,
-      abi: ERC20_ABI,
-      functionName: 'decimals' as const,
-      chainId: base.id,
-    },
-    {
-      address: USDT_BASE,
-      abi: ERC20_ABI,
-      functionName: 'balanceOf' as const,
-      args: [address],
-      chainId: base.id,
-    },
-    {
-      address: USDT_BASE,
-      abi: ERC20_ABI,
-      functionName: 'decimals' as const,
-      chainId: base.id,
-    },
-  ] : [];
-
-  const { data: tokenBalances } = useReadContracts({
-    contracts,
+  // USDC balance and decimals
+  const { data: usdcData } = useReadContracts({
+    contracts: [
+      {
+        address: USDC_BASE,
+        abi: ERC20_ABI,
+        functionName: 'balanceOf',
+        args: address ? [address] : undefined,
+        chainId: base.id,
+      },
+      {
+        address: USDC_BASE,
+        abi: ERC20_ABI,
+        functionName: 'decimals',
+        chainId: base.id,
+      },
+    ],
     query: { enabled: !!address },
   });
 
-  const usdcBalance = tokenBalances?.[0]?.result && tokenBalances?.[1]?.result
-    ? formatUnits(tokenBalances[0].result as bigint, tokenBalances[1].result as number)
+  // USDT balance and decimals
+  const { data: usdtData } = useReadContracts({
+    contracts: [
+      {
+        address: USDT_BASE,
+        abi: ERC20_ABI,
+        functionName: 'balanceOf',
+        args: address ? [address] : undefined,
+        chainId: base.id,
+      },
+      {
+        address: USDT_BASE,
+        abi: ERC20_ABI,
+        functionName: 'decimals',
+        chainId: base.id,
+      },
+    ],
+    query: { enabled: !!address },
+  });
+
+  const usdcBalance = usdcData?.[0]?.result && usdcData?.[1]?.result
+    ? formatUnits(usdcData[0].result as bigint, usdcData[1].result as number)
     : '0';
 
-  const usdtBalance = tokenBalances?.[2]?.result && tokenBalances?.[3]?.result
-    ? formatUnits(tokenBalances[2].result as bigint, tokenBalances[3].result as number)
+  const usdtBalance = usdtData?.[0]?.result && usdtData?.[1]?.result
+    ? formatUnits(usdtData[0].result as bigint, usdtData[1].result as number)
     : '0';
 
   const ethBalanceFormatted = ethBalance 
