@@ -32,44 +32,51 @@ export function useBaseBalances() {
     chainId: base.id,
   });
 
-  // USDC balance and decimals
+  // Only make contract calls if address exists
+  const shouldFetch = !!address;
+
+  // USDC balance and decimals - simplified structure
+  const usdcContracts = shouldFetch ? [
+    {
+      address: USDC_BASE,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf' as const,
+      args: [address!],
+      chainId: base.id,
+    },
+    {
+      address: USDC_BASE,
+      abi: ERC20_ABI,
+      functionName: 'decimals' as const,
+      chainId: base.id,
+    },
+  ] as const : [];
+
   const { data: usdcData } = useReadContracts({
-    contracts: [
-      {
-        address: USDC_BASE,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: address ? [address] : undefined,
-        chainId: base.id,
-      },
-      {
-        address: USDC_BASE,
-        abi: ERC20_ABI,
-        functionName: 'decimals',
-        chainId: base.id,
-      },
-    ],
-    query: { enabled: !!address },
+    contracts: usdcContracts,
+    query: { enabled: shouldFetch },
   });
 
-  // USDT balance and decimals
+  // USDT balance and decimals - simplified structure
+  const usdtContracts = shouldFetch ? [
+    {
+      address: USDT_BASE,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf' as const,
+      args: [address!],
+      chainId: base.id,
+    },
+    {
+      address: USDT_BASE,
+      abi: ERC20_ABI,
+      functionName: 'decimals' as const,
+      chainId: base.id,
+    },
+  ] as const : [];
+
   const { data: usdtData } = useReadContracts({
-    contracts: [
-      {
-        address: USDT_BASE,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: address ? [address] : undefined,
-        chainId: base.id,
-      },
-      {
-        address: USDT_BASE,
-        abi: ERC20_ABI,
-        functionName: 'decimals',
-        chainId: base.id,
-      },
-    ],
-    query: { enabled: !!address },
+    contracts: usdtContracts,
+    query: { enabled: shouldFetch },
   });
 
   const usdcBalance = usdcData?.[0]?.result && usdcData?.[1]?.result
