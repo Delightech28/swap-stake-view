@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ArrowDown, ArrowUp, AlertTriangle } from 'lucide-react';
+import { ArrowDown, ArrowUp, AlertTriangle, Info } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 import { useTokenPrices } from '../hooks/useTokenPrices';
-import { useLiquidity } from '../hooks/useLiquidity';
+import { useUniswapLiquidity } from '../hooks/useUniswapLiquidity';
 import { useBaseBalances } from '../hooks/useBaseBalances';
 import { Alert, AlertDescription } from '../components/ui/alert';
 
@@ -18,7 +18,7 @@ const Swap = () => {
   const { isConnected } = useAccount();
   const { bloomBalance } = useTokenBalance();
   const { data: prices, isLoading: pricesLoading } = useTokenPrices();
-  const { data: liquidity } = useLiquidity();
+  const { data: liquidityData } = useUniswapLiquidity();
   const { ethBalance, usdcBalance, usdtBalance } = useBaseBalances();
 
   const tokens = [
@@ -72,24 +72,6 @@ const Swap = () => {
     
     if (amountNum > balance) {
       return 'Insufficient balance';
-    }
-    
-    // Check liquidity for BLOOM swaps
-    if (token === 'BLOOM' && liquidity) {
-      const usdValue = amountNum * (fromTokenData?.price || 0);
-      let availableLiquidity = 0;
-      
-      if (toToken === 'ETH') {
-        availableLiquidity = liquidity.bloomEthLiquidity;
-      } else if (toToken === 'USDC') {
-        availableLiquidity = liquidity.bloomUsdcLiquidity;
-      } else if (toToken === 'USDT') {
-        availableLiquidity = liquidity.bloomUsdtLiquidity;
-      }
-      
-      if (usdValue > availableLiquidity * 0.1) { // Allow up to 10% of liquidity
-        return 'Insufficient liquidity for this swap amount';
-      }
     }
     
     return '';
@@ -160,6 +142,37 @@ const Swap = () => {
           </div>
         )}
 
+        {/* Liquidity Warning */}
+        {liquidityData?.isLowLiquidity && (fromToken === 'BLOOM' || toToken === 'BLOOM') && (
+          <Alert variant="destructive" className="border-yellow-500/20 bg-yellow-500/10">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="text-yellow-400">
+              Low liquidity detected! Pool has only ~{liquidityData.ethLiquidity.toFixed(2)} ETH. 
+              Large swaps may experience high slippage.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Liquidity Info */}
+        {liquidityData && (fromToken === 'BLOOM' || toToken === 'BLOOM') && (
+          <div className="glass-card p-4 md:p-6 border border-blue-500/20 shadow-2xl shadow-blue-500/10">
+            <div className="flex items-center space-x-2 mb-3">
+              <Info className="h-4 w-4 text-blue-400" />
+              <span className="text-blue-400 font-semibold">Pool Liquidity (BLOOM/ETH)</span>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-400">ETH Liquidity:</span>
+                <span className="text-white font-semibold">{liquidityData.ethLiquidity.toFixed(4)} ETH</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">BLOOM Liquidity:</span>
+                <span className="text-white font-semibold">{liquidityData.bloomLiquidity.toFixed(0)} BLOOM</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Error Alert */}
         {error && (
           <Alert variant="destructive" className="border-red-500/20 bg-red-500/10">
@@ -180,7 +193,7 @@ const Swap = () => {
                   placeholder="0.0"
                   value={fromAmount}
                   onChange={(e) => handleFromAmountChange(e.target.value)}
-                  className="bg-transparent text-2xl md:text-3xl font-bold text-white placeholder-gray-400 outline-none flex-1 min-w-0"
+                  className="bg-transparent text-2xl md:text-3xl font-bold text-white placeholder-gray-400 outline-none flex-1 min-w-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <select
                   value={fromToken}
@@ -232,7 +245,7 @@ const Swap = () => {
                   placeholder="0.0"
                   value={toAmount}
                   readOnly
-                  className="bg-transparent text-2xl md:text-3xl font-bold text-white placeholder-gray-400 outline-none flex-1 min-w-0"
+                  className="bg-transparent text-2xl md:text-3xl font-bold text-white placeholder-gray-400 outline-none flex-1 min-w-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <select
                   value={toToken}

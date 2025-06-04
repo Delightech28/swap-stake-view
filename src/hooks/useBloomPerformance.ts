@@ -12,7 +12,7 @@ async function fetchBloomPerformance(): Promise<PricePoint[]> {
   try {
     // Fetch BLOOM historical price data from GeckoTerminal
     const response = await fetch(
-      `https://api.geckoterminal.com/api/v2/networks/base/tokens/${BLOOM_CONTRACT}/ohlcv/day?limit=7`
+      `https://api.geckoterminal.com/api/v2/networks/base/tokens/${BLOOM_CONTRACT}/ohlcv/hour?limit=24`
     );
     
     if (!response.ok) {
@@ -24,14 +24,18 @@ async function fetchBloomPerformance(): Promise<PricePoint[]> {
     
     const ohlcvData = data.data?.attributes?.ohlcv_list || [];
     
-    // Convert OHLCV data to price points
+    // Convert OHLCV data to price points (last 24 hours)
     const pricePoints: PricePoint[] = ohlcvData.map((item: any, index: number) => {
       const timestamp = item[0];
       const closePrice = parseFloat(item[4]); // Close price
       
-      // Create time labels for the last 7 days
+      // Create time labels for the last 24 hours
       const date = new Date(timestamp * 1000);
-      const timeLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const timeLabel = date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      });
       
       return {
         time: timeLabel,
@@ -48,15 +52,20 @@ async function fetchBloomPerformance(): Promise<PricePoint[]> {
 
 function generateFallbackData(): PricePoint[] {
   const basePrice = 0.00003538;
-  return [
-    { time: 'Dec 27', price: basePrice * 0.95 },
-    { time: 'Dec 28', price: basePrice * 0.98 },
-    { time: 'Dec 29', price: basePrice * 0.92 },
-    { time: 'Dec 30', price: basePrice * 1.05 },
-    { time: 'Dec 31', price: basePrice * 1.08 },
-    { time: 'Jan 1', price: basePrice * 1.12 },
-    { time: 'Today', price: basePrice },
-  ];
+  const now = new Date();
+  
+  return Array.from({ length: 24 }, (_, i) => {
+    const time = new Date(now.getTime() - (23 - i) * 60 * 60 * 1000);
+    const variation = (Math.random() - 0.5) * 0.2; // ±10% variation
+    return {
+      time: time.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      }),
+      price: basePrice * (1 + variation),
+    };
+  });
 }
 
 export function useBloomPerformance() {
