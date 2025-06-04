@@ -1,12 +1,13 @@
-
 import { useState, useEffect } from 'react';
-import { ArrowDown, AlertTriangle, Info } from 'lucide-react';
+import { ArrowDown, AlertTriangle, Info, CheckCircle, Loader2 } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 import { useTokenPrices } from '../hooks/useTokenPrices';
 import { useUniswapLiquidity } from '../hooks/useUniswapLiquidity';
 import { useBaseBalances } from '../hooks/useBaseBalances';
+import { useSwapExecution } from '../hooks/useSwapExecution';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 
 const Swap = () => {
   const [bloomAmount, setBloomAmount] = useState('');
@@ -16,12 +17,24 @@ const Swap = () => {
   const [priceImpact, setPriceImpact] = useState(0);
   const [usdcEquivalent, setUsdcEquivalent] = useState('');
   const [usdtEquivalent, setUsdtEquivalent] = useState('');
+  const [needsApproval, setNeedsApproval] = useState(false);
 
   const { isConnected } = useAccount();
   const { bloomBalance } = useTokenBalance();
   const { data: prices, isLoading: pricesLoading } = useTokenPrices();
   const { data: liquidityData } = useUniswapLiquidity();
   const { ethBalance } = useBaseBalances();
+  const { toast } = useToast();
+
+  const {
+    executeSwap,
+    approveToken,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error: swapError,
+    hash,
+  } = useSwapExecution();
 
   const bloomPrice = prices?.bloom.price || 0.00003557;
   const ethPrice = prices?.eth.price || 2624.83;
@@ -81,6 +94,67 @@ const Swap = () => {
     }
   };
 
+  const handleSwap = async () => {
+    if (!bloomAmount || !ethAmount || !isConnected) return;
+
+    try {
+      if (needsApproval) {
+        toast({
+          title: "Approving BLOOM...",
+          description: "Please confirm the approval transaction in your wallet.",
+        });
+        await approveToken(bloomAmount);
+        setNeedsApproval(false);
+        return;
+      }
+
+      toast({
+        title: "Executing Swap...",
+        description: "Please confirm the swap transaction in your wallet.",
+      });
+
+      await executeSwap({
+        bloomAmount,
+        ethAmount,
+        slippage,
+      });
+    } catch (error) {
+      console.error('Swap failed:', error);
+      toast({
+        title: "Swap Failed",
+        description: "The swap transaction failed. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle successful transaction
+  useEffect(() => {
+    if (isSuccess && hash) {
+      toast({
+        title: "Swap Successful!",
+        description: `Transaction completed: ${hash.slice(0, 10)}...`,
+      });
+      // Reset form
+      setBloomAmount('');
+      setEthAmount('');
+      setPriceImpact(0);
+      setUsdcEquivalent('');
+      setUsdtEquivalent('');
+    }
+  }, [isSuccess, hash, toast]);
+
+  // Handle swap errors
+  useEffect(() => {
+    if (swapError) {
+      toast({
+        title: "Transaction Error",
+        description: swapError.message || "An error occurred during the swap.",
+        variant: "destructive",
+      });
+    }
+  }, [swapError, toast]);
+
   const formatPriceImpact = (impact: number) => {
     if (impact < 0.01) return '< 0.01%';
     if (impact > 15) return `${impact.toFixed(2)}% (Very High)`;
@@ -104,6 +178,19 @@ const Swap = () => {
   const bloomUsdValue = bloomAmount ? (parseFloat(bloomAmount) * bloomPrice).toFixed(2) : '0.00';
   const ethUsdValue = ethAmount ? (parseFloat(ethAmount) * ethPrice).toFixed(2) : '0.00';
 
+  // Determine button state and text
+  const getButtonState = () => {
+    if (!isConnected) return { disabled: true, text: 'Connect Wallet' };
+    if (!bloomAmount) return { disabled: true, text: 'Enter BLOOM Amount' };
+    if (error) return { disabled: true, text: error };
+    if (priceImpact > 20) return { disabled: true, text: 'Price Impact Too High' };
+    if (isPending || isConfirming) return { disabled: true, text: isPending ? 'Confirming...' : 'Processing...' };
+    if (needsApproval) return { disabled: false, text: 'Approve BLOOM' };
+    return { disabled: false, text: 'Swap BLOOM for ETH' };
+  };
+
+  const buttonState = getButtonState();
+
   return (
     <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
       <div className="max-w-md md:max-w-lg mx-auto space-y-4 md:space-y-8">
@@ -122,6 +209,16 @@ const Swap = () => {
               Connect your wallet to see real Base network balances and enable swapping
             </p>
           </div>
+        )}
+
+        {/* Success Message */}
+        {isSuccess && (
+          <Alert className="border-green-500/20 bg-green-500/10">
+            <CheckCircle className="h-4 w-4 text-green-400" />
+            <AlertDescription className="text-green-400">
+              Swap completed successfully! Check your wallet for the ETH.
+            </AlertDescription>
+          </Alert>
         )}
 
         {/* Liquidity Warning */}
@@ -298,18 +395,18 @@ const Swap = () => {
 
           {/* Swap Button */}
           <button
-            className={`w-full py-3 md:py-4 rounded-xl text-white font-bold text-base md:text-lg transition-all duration-300 transform hover:scale-[1.02] ${
-              !bloomAmount || !ethAmount || !isConnected || error || priceImpact > 20
+            onClick={handleSwap}
+            className={`w-full py-3 md:py-4 rounded-xl text-white font-bold text-base md:text-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-2 ${
+              buttonState.disabled
                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                 : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 hover:shadow-green-500/40'
             }`}
-            disabled={!bloomAmount || !ethAmount || !isConnected || !!error || priceImpact > 20}
+            disabled={buttonState.disabled}
           >
-            {!isConnected ? 'Connect Wallet' : 
-             error ? error : 
-             priceImpact > 20 ? 'Price Impact Too High' :
-             !bloomAmount ? 'Enter BLOOM Amount' : 
-             'Swap BLOOM for ETH'}
+            {(isPending || isConfirming) && (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            )}
+            <span>{buttonState.text}</span>
           </button>
         </div>
       </div>
