@@ -103,7 +103,8 @@ export function useSwapExecution() {
         abi: SWAP_ROUTER_ABI,
         functionName: 'exactInputSingle',
         args: [swapParams],
-        chainId: base.id,
+        chain: base,
+        account: address,
       });
     } catch (error) {
       console.error('Swap execution error:', error);
@@ -122,7 +123,8 @@ export function useSwapExecution() {
         abi: ERC20_ABI,
         functionName: 'approve',
         args: [SWAP_ROUTER_ADDRESS as `0x${string}`, amountToApprove],
-        chainId: base.id,
+        chain: base,
+        account: address,
       });
     } catch (error) {
       console.error('Approval error:', error);
