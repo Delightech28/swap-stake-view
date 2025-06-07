@@ -22,7 +22,7 @@ const Swap = () => {
   const { isConnected } = useAccount();
   const { bloomBalance } = useTokenBalance();
   const { data: prices, isLoading: pricesLoading } = useTokenPrices();
-  const { data: liquidityData } = useUniswapLiquidity();
+  const { data: liquidityData, isLoading: liquidityLoading } = useUniswapLiquidity();
   const { ethBalance } = useBaseBalances();
   const { toast } = useToast();
 
@@ -47,10 +47,15 @@ const Swap = () => {
     const bloomInputNum = parseFloat(bloomInput);
     const poolLiquidityEth = liquidityData.ethLiquidity;
     
-    // Simple price impact calculation: (input / pool_liquidity) * 100
-    // This is a simplified model - real implementation would use AMM formulas
-    const impact = (bloomInputNum * bloomPrice) / (poolLiquidityEth * ethPrice) * 100;
-    return Math.min(impact, 50); // Cap at 50% for safety
+    // Enhanced price impact calculation with better thresholds
+    if (poolLiquidityEth === 0) return 100; // No liquidity = 100% impact
+    
+    const bloomUsdValue = bloomInputNum * bloomPrice;
+    const impactRatio = bloomUsdValue / (poolLiquidityEth * ethPrice);
+    
+    // More realistic price impact formula
+    const impact = impactRatio * 100 * 1.5; // 1.5x multiplier for conservative estimation
+    return Math.min(impact, 100); // Cap at 100%
   };
 
   const handleBloomAmountChange = (value: string) => {
@@ -79,13 +84,15 @@ const Swap = () => {
       setUsdtEquivalent('');
     }
     
-    // Validate balance
+    // Enhanced validation with liquidity checks
     if (value && isConnected) {
       const bloomNum = parseFloat(value);
       const balance = parseFloat(bloomBalance || '0');
       
       if (bloomNum > balance) {
         setError('Insufficient BLOOM balance');
+      } else if (liquidityData?.isLowLiquidity && bloomNum > 100000) {
+        setError('Swap amount too large for current liquidity');
       } else {
         setError('');
       }
@@ -178,11 +185,12 @@ const Swap = () => {
   const bloomUsdValue = bloomAmount ? (parseFloat(bloomAmount) * bloomPrice).toFixed(2) : '0.00';
   const ethUsdValue = ethAmount ? (parseFloat(ethAmount) * ethPrice).toFixed(2) : '0.00';
 
-  // Determine button state and text
+  // Enhanced button state logic with liquidity checks
   const getButtonState = () => {
     if (!isConnected) return { disabled: true, text: 'Connect Wallet' };
     if (!bloomAmount) return { disabled: true, text: 'Enter BLOOM Amount' };
     if (error) return { disabled: true, text: error };
+    if (liquidityData?.liquidityWarning && priceImpact > 50) return { disabled: true, text: 'Liquidity Too Low' };
     if (priceImpact > 20) return { disabled: true, text: 'Price Impact Too High' };
     if (isPending || isConfirming) return { disabled: true, text: isPending ? 'Confirming...' : 'Processing...' };
     if (needsApproval) return { disabled: false, text: 'Approve BLOOM' };
@@ -221,8 +229,17 @@ const Swap = () => {
           </Alert>
         )}
 
-        {/* Liquidity Warning */}
-        {liquidityData?.isLowLiquidity && (
+        {/* Enhanced Liquidity Warnings */}
+        {liquidityData?.liquidityWarning && (
+          <Alert variant="destructive" className="border-red-500/20 bg-red-500/10">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="text-red-400">
+              {liquidityData.liquidityWarning}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {liquidityData?.isLowLiquidity && !liquidityData?.liquidityWarning && (
           <Alert variant="destructive" className="border-yellow-500/20 bg-yellow-500/10">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-yellow-400">
@@ -381,6 +398,10 @@ const Swap = () => {
               <div className="flex justify-between text-gray-400">
                 <span className="font-medium">Price Impact</span>
                 <span className={`font-bold ${getImpactColor(priceImpact)}`}>{formatPriceImpact(priceImpact)}</span>
+              </div>
+              <div className="flex justify-between text-gray-400">
+                <span className="font-medium">Pool Liquidity</span>
+                <span className="font-bold text-white">{liquidityData?.ethLiquidity.toFixed(2)} ETH</span>
               </div>
               <div className="flex justify-between text-gray-400">
                 <span className="font-medium">Slippage Tolerance</span>

@@ -71,4 +71,65 @@
   .premium-glow {
     box-shadow: 0 0 30px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
+
+  /* Fix mobile wallet modal styling */
+  [data-testid="ockConnectWallet_Container"] {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 163, 74, 0.95) 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(34, 197, 94, 0.3) !important;
+  }
+
+  /* Ensure wallet buttons stay within the green container */
+  [data-testid="ockConnectWallet_Container"] > div {
+    position: relative !important;
+    z-index: 10 !important;
+  }
+
+  /* Style the wallet option buttons */
+  [data-testid="ockConnectWallet_Container"] button {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    color: white !important;
+  }
+
+  [data-testid="ockConnectWallet_Container"] button:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Override any white backgrounds in wallet modal */
+  [data-testid="ockConnectWallet_Container"] * {
+    background: transparent !important;
+  }
+
+  /* Style the modal title */
+  [data-testid="ockConnectWallet_Container"] h1,
+  [data-testid="ockConnectWallet_Container"] h2,
+  [data-testid="ockConnectWallet_Container"] h3 {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* Mobile-specific wallet modal fixes */
+  @media (max-width: 768px) {
+    [data-testid="ockConnectWallet_Container"] {
+      margin: 1rem !important;
+      max-height: calc(100vh - 2rem) !important;
+      overflow-y: auto !important;
+    }
+
+    /* Ensure wallet buttons don't get pushed down on mobile */
+    [data-testid="ockConnectWallet_Container"] > div:first-child {
+      padding-top: 1rem !important;
+    }
+
+    /* Fix any positioning issues on mobile */
+    [data-testid="ockConnectWallet_Container"] button {
+      margin: 0.5rem 0 !important;
+      width: 100% !important;
+    }
+  }
 }
