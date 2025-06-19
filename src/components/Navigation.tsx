@@ -33,7 +33,11 @@ const Navigation = () => {
     <nav className="glass-card p-4 md:p-6 m-2 md:m-4 sticky top-2 md:top-4 z-50 border border-green-500/20 shadow-2xl shadow-green-500/10">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2 md:space-x-3">
-          <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-xl animate-pulse-green shadow-lg shadow-green-500/30"></div>
+          <img 
+            src="/lovable-uploads/509cd517-b7dc-4860-8849-602b2b678056.png" 
+            alt="BaseBloomer Logo" 
+            className="w-8 h-8 md:w-10 md:h-10 rounded-xl shadow-lg shadow-green-500/30"
+          />
           <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-400 via-green-500 to-emerald-600 bg-clip-text text-transparent">
             BaseBloomer
           </span>
@@ -55,22 +59,24 @@ const Navigation = () => {
             </Link>
           ))}
           
-          <Wallet>
-            <ConnectWallet className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 md:px-8 py-2 md:py-3 rounded-xl text-white font-bold shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all duration-300 transform hover:scale-105 text-sm md:text-base border-0">
-              <Avatar className="h-5 w-5 md:h-6 md:w-6" />
-              <Name className="text-sm md:text-base" />
-              <Address className="text-gray-300 text-xs" />
-            </ConnectWallet>
-            <WalletDropdown className="bg-gray-900 border border-green-500/20 shadow-2xl shadow-green-500/10">
-              <Identity className="px-4 pt-3 pb-2 bg-gray-900" hasCopyAddressOnClick>
-                <Avatar />
-                <Name />
-                <Address className="text-gray-400" />
-                <EthBalance />
-              </Identity>
-              <WalletDropdownDisconnect className="bg-gray-900 hover:bg-gray-800" />
-            </WalletDropdown>
-          </Wallet>
+          <div className="relative z-[60]">
+            <Wallet>
+              <ConnectWallet className="bg-transparent hover:bg-white/10 px-6 md:px-8 py-2 md:py-3 rounded-xl text-white font-bold border border-green-500/30 hover:border-green-500/50 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                <Avatar className="h-5 w-5 md:h-6 md:w-6" />
+                <Name className="text-sm md:text-base" />
+                <Address className="text-gray-300 text-xs" />
+              </ConnectWallet>
+              <WalletDropdown className="bg-gray-900/95 backdrop-blur-xl border border-green-500/20 shadow-2xl shadow-green-500/10 rounded-xl mt-2 z-[70]">
+                <Identity className="px-4 pt-3 pb-2 bg-transparent" hasCopyAddressOnClick>
+                  <Avatar />
+                  <Name />
+                  <Address className="text-gray-400" />
+                  <EthBalance />
+                </Identity>
+                <WalletDropdownDisconnect className="bg-transparent hover:bg-gray-800/50 rounded-lg mx-2 mb-2" />
+              </WalletDropdown>
+            </Wallet>
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -102,20 +108,20 @@ const Navigation = () => {
             </Link>
           ))}
           
-          <div className="pt-2">
+          <div className="pt-2 relative z-[60]">
             <Wallet>
-              <ConnectWallet className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-4 py-3 rounded-xl text-white font-bold shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all duration-300 text-sm flex items-center justify-center space-x-2 border-0">
+              <ConnectWallet className="w-full bg-transparent hover:bg-white/10 px-4 py-3 rounded-xl text-white font-bold border border-green-500/30 hover:border-green-500/50 transition-all duration-300 text-sm flex items-center justify-center space-x-2">
                 <Avatar className="h-6 w-6" />
                 <Address className="text-white text-sm" />
               </ConnectWallet>
-              <WalletDropdown className="bg-gray-900 border border-green-500/20 shadow-2xl shadow-green-500/10">
-                <Identity className="px-4 pt-3 pb-2 bg-gray-900" hasCopyAddressOnClick>
+              <WalletDropdown className="bg-gray-900/95 backdrop-blur-xl border border-green-500/20 shadow-2xl shadow-green-500/10 rounded-xl mt-2 z-[70]">
+                <Identity className="px-4 pt-3 pb-2 bg-transparent" hasCopyAddressOnClick>
                   <Avatar />
                   <Name />
                   <Address className="text-gray-400" />
                   <EthBalance />
                 </Identity>
-                <WalletDropdownDisconnect className="bg-gray-900 hover:bg-gray-800" />
+                <WalletDropdownDisconnect className="bg-transparent hover:bg-gray-800/50 rounded-lg mx-2 mb-2" />
               </WalletDropdown>
             </Wallet>
           </div>

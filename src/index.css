@@ -72,11 +72,23 @@
     box-shadow: 0 0 30px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
+  /* Enhanced wallet dropdown positioning */
+  [data-testid="ockWalletDropdown_Container"] {
+    z-index: 70 !important;
+    position: relative !important;
+  }
+
+  /* Remove default background from connect wallet button */
+  [data-testid="ockConnectWallet_Container"] > button {
+    background: transparent !important;
+  }
+
   /* Fix mobile wallet modal styling */
   [data-testid="ockConnectWallet_Container"] {
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 163, 74, 0.95) 100%) !important;
     backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(34, 197, 94, 0.3) !important;
+    z-index: 9999 !important;
   }
 
   /* Ensure wallet buttons stay within the green container */
@@ -119,6 +131,7 @@
       margin: 1rem !important;
       max-height: calc(100vh - 2rem) !important;
       overflow-y: auto !important;
+      z-index: 9999 !important;
     }
 
     /* Ensure wallet buttons don't get pushed down on mobile */
