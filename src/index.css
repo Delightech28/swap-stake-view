@@ -72,13 +72,21 @@
     box-shadow: 0 0 30px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
-  /* Enhanced wallet dropdown positioning - show above header */
-  [data-testid="ockWalletDropdown_Container"],
+  /* Enhanced wallet dropdown positioning - show above header and centered */
+  [data-testid="ockWalletDropdown_Container"] {
+    z-index: 99999 !important;
+  }
+
   [data-testid="ockModalOverlay"],
   [data-testid="ockModal"],
   div[role="dialog"] {
     z-index: 99999 !important;
     position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    right: auto !important;
+    bottom: auto !important;
   }
 
   /* Remove default background from connect wallet button */
