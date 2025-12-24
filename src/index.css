@@ -154,6 +154,29 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
   }
 
+  /* Hide signup text and divider in wallet modal */
+  [data-testid="ockModalContent"] hr,
+  [data-testid="ockModalContent"] [class*="divider"],
+  div[role="dialog"] hr {
+    display: none !important;
+  }
+
+  /* Hide "Sign up" and "or continue with existing wallet" text */
+  [data-testid="ockModalContent"] span:has(+ hr),
+  [data-testid="ockModalContent"] p:contains("Sign up"),
+  [data-testid="ockModalContent"] p:contains("continue with"),
+  [data-testid="ockModalContent"] > div > p,
+  div[role="dialog"] > div > p:first-of-type {
+    display: none !important;
+  }
+
+  /* Hide the sign up section wrapper */
+  [data-testid="ockModalContent"] > div:first-child > div:first-child,
+  [data-testid="ockModalContent"] [class*="signup"],
+  [data-testid="ockModalContent"] [class*="SignUp"] {
+    display: none !important;
+  }
+
   /* Mobile-specific wallet modal fixes */
   @media (max-width: 768px) {
     [data-testid="ockModalOverlay"],
