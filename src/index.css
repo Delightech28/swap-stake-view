@@ -74,7 +74,7 @@
 
   /* Enhanced wallet dropdown positioning */
   [data-testid="ockWalletDropdown_Container"] {
-    z-index: 70 !important;
+    z-index: 9999 !important;
     position: relative !important;
   }
 
@@ -83,64 +83,80 @@
     background: transparent !important;
   }
 
-  /* Fix mobile wallet modal styling */
-  [data-testid="ockConnectWallet_Container"] {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 163, 74, 0.95) 100%) !important;
+  /* Force wallet modal to have green background - production fix */
+  [data-testid="ockModalOverlay"],
+  [data-testid="ockModal"],
+  [data-testid="ockConnectModal"],
+  div[role="dialog"],
+  .ock-modal,
+  .ock-overlay {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(142 76% 30%) 100%) !important;
     backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(34, 197, 94, 0.3) !important;
-    z-index: 9999 !important;
   }
 
-  /* Ensure wallet buttons stay within the green container */
-  [data-testid="ockConnectWallet_Container"] > div {
-    position: relative !important;
-    z-index: 10 !important;
+  /* Target all wallet modal containers and remove white backgrounds */
+  [data-testid="ockConnectWallet_Container"],
+  [data-testid="ockConnectWallet_Container"] > div,
+  [data-testid="ockConnectWallet_Container"] [class*="bg-"],
+  [data-testid="ockConnectWallet_Container"] [style*="background"] {
+    background: transparent !important;
+    background-color: transparent !important;
   }
 
-  /* Style the wallet option buttons */
-  [data-testid="ockConnectWallet_Container"] button {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  /* Style wallet option buttons */
+  [data-testid="ockConnectWallet_Container"] button,
+  [data-testid="ockModalContent"] button,
+  div[role="dialog"] button {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
     backdrop-filter: blur(10px) !important;
     color: white !important;
+    border-radius: 12px !important;
   }
 
-  [data-testid="ockConnectWallet_Container"] button:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  [data-testid="ockConnectWallet_Container"] button:hover,
+  [data-testid="ockModalContent"] button:hover,
+  div[role="dialog"] button:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
   }
 
-  /* Override any white backgrounds in wallet modal */
-  [data-testid="ockConnectWallet_Container"] * {
+  /* Override any inline white backgrounds in modals */
+  [data-testid="ockModalContent"],
+  [data-testid="ockModalContent"] > div,
+  div[role="dialog"] > div {
     background: transparent !important;
+    background-color: transparent !important;
   }
 
-  /* Style the modal title */
-  [data-testid="ockConnectWallet_Container"] h1,
-  [data-testid="ockConnectWallet_Container"] h2,
-  [data-testid="ockConnectWallet_Container"] h3 {
+  /* Style modal headings */
+  [data-testid="ockModalContent"] h1,
+  [data-testid="ockModalContent"] h2,
+  [data-testid="ockModalContent"] h3,
+  [data-testid="ockModalContent"] p,
+  div[role="dialog"] h1,
+  div[role="dialog"] h2,
+  div[role="dialog"] p {
     color: white !important;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
   }
 
   /* Mobile-specific wallet modal fixes */
   @media (max-width: 768px) {
-    [data-testid="ockConnectWallet_Container"] {
+    [data-testid="ockModalOverlay"],
+    [data-testid="ockModal"],
+    div[role="dialog"] {
       margin: 1rem !important;
       max-height: calc(100vh - 2rem) !important;
       overflow-y: auto !important;
       z-index: 9999 !important;
+      border-radius: 16px !important;
     }
 
-    /* Ensure wallet buttons don't get pushed down on mobile */
-    [data-testid="ockConnectWallet_Container"] > div:first-child {
-      padding-top: 1rem !important;
-    }
-
-    /* Fix any positioning issues on mobile */
-    [data-testid="ockConnectWallet_Container"] button {
+    [data-testid="ockModalContent"] button,
+    div[role="dialog"] button {
       margin: 0.5rem 0 !important;
       width: 100% !important;
     }
