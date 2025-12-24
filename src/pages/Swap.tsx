@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowDown, AlertTriangle, Info, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowDown, AlertTriangle, Info, CheckCircle, Loader2, Copy } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 import { useTokenPrices } from '../hooks/useTokenPrices';
@@ -8,6 +8,8 @@ import { useBaseBalances } from '../hooks/useBaseBalances';
 import { useSwapExecution } from '../hooks/useSwapExecution';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+
+const BLOOM_CONTRACT_ADDRESS = '0x14d1461E2A88929D9Ac36C152bd54f58Cb8095Fe';
 
 const Swap = () => {
   const [bloomAmount, setBloomAmount] = useState('');
@@ -208,6 +210,27 @@ const Swap = () => {
             Swap BLOOM to ETH
           </h1>
           <p className="text-gray-400 text-base md:text-lg">Trade BLOOM tokens for ETH on Base Network</p>
+          
+          {/* BLOOM Contract Address */}
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className="text-xs md:text-sm text-gray-500">CA:</span>
+            <code className="text-xs md:text-sm text-green-400 bg-white/5 px-2 py-1 rounded font-mono">
+              {BLOOM_CONTRACT_ADDRESS.slice(0, 6)}...{BLOOM_CONTRACT_ADDRESS.slice(-4)}
+            </code>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(BLOOM_CONTRACT_ADDRESS);
+                toast({
+                  title: "Copied!",
+                  description: "Contract address copied to clipboard.",
+                });
+              }}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              title="Copy contract address"
+            >
+              <Copy className="w-3.5 h-3.5 text-green-400" />
+            </button>
+          </div>
         </div>
 
         {/* Connection Status */}

@@ -87,6 +87,7 @@
     transform: translate(-50%, -50%) !important;
     right: auto !important;
     bottom: auto !important;
+    margin-top: 2rem !important;
   }
 
   /* Remove default background from connect wallet button */
@@ -154,27 +155,33 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
   }
 
-  /* Hide signup text and divider in wallet modal */
+  /* Hide signup text, divider, and "or continue with existing wallet" text */
   [data-testid="ockModalContent"] hr,
   [data-testid="ockModalContent"] [class*="divider"],
-  div[role="dialog"] hr {
-    display: none !important;
-  }
-
-  /* Hide "Sign up" and "or continue with existing wallet" text */
-  [data-testid="ockModalContent"] span:has(+ hr),
-  [data-testid="ockModalContent"] p:contains("Sign up"),
-  [data-testid="ockModalContent"] p:contains("continue with"),
+  div[role="dialog"] hr,
+  /* Hide all paragraph text in modal except wallet names */
+  [data-testid="ockModalContent"] > div > div > p,
   [data-testid="ockModalContent"] > div > p,
-  div[role="dialog"] > div > p:first-of-type {
+  [data-testid="ockModalContent"] > p,
+  div[role="dialog"] > div > div > p,
+  div[role="dialog"] > div > p {
     display: none !important;
   }
 
-  /* Hide the sign up section wrapper */
-  [data-testid="ockModalContent"] > div:first-child > div:first-child,
+  /* Hide the sign up section completely */
+  [data-testid="ockModalContent"] > div:first-child,
+  [data-testid="ockModalContent"] form,
+  [data-testid="ockModalContent"] input[type="email"],
   [data-testid="ockModalContent"] [class*="signup"],
-  [data-testid="ockModalContent"] [class*="SignUp"] {
+  [data-testid="ockModalContent"] [class*="SignUp"],
+  [data-testid="ockModalContent"] [class*="email"] {
     display: none !important;
+  }
+
+  /* Only show the wallet buttons section */
+  [data-testid="ockModalContent"] [class*="wallet"],
+  [data-testid="ockModalContent"] [class*="Wallet"] {
+    display: flex !important;
   }
 
   /* Mobile-specific wallet modal fixes */
