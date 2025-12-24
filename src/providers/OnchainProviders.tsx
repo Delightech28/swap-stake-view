@@ -27,15 +27,13 @@ export function OnchainProviders({ children }: OnchainProvidersProps) {
           chain={base}
           config={{
             appearance: {
-              name: 'CryptoSwap',
-              logo: '/placeholder.svg',
+              name: 'BaseBloomer',
+              logo: '/lovable-uploads/509cd517-b7dc-4860-8849-602b2b678056.png',
               mode: 'dark',
               theme: 'default',
             },
             wallet: {
               display: 'modal',
-              termsUrl: 'https://base.org/terms',
-              privacyUrl: 'https://base.org/privacy',
             },
           }}
         >
