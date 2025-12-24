@@ -8,7 +8,7 @@ export function getConfig() {
     chains: [base, baseSepolia],
     connectors: [
       coinbaseWallet({
-        appName: 'CryptoSwap',
+        appName: 'BaseBloomer',
         preference: 'smartWalletOnly',
       }),
       metaMask(),
